@@ -1,0 +1,27 @@
+<!--Pololu Maestro servo controller settings file, http://www.pololu.com/catalog/product/1350-->
+<UscSettings version="1">
+  <NeverSuspend>false</NeverSuspend>
+  <SerialMode>USB_DUAL_PORT</SerialMode>
+  <FixedBaudRate>9600</FixedBaudRate>
+  <SerialTimeout>0</SerialTimeout>
+  <EnableCrc>false</EnableCrc>
+  <SerialDeviceNumber>12</SerialDeviceNumber>
+  <SerialMiniSscOffset>0</SerialMiniSscOffset>
+  <Channels ServosAvailable="3" ServoPeriod="156">
+    <!--Period = 9.984 ms-->
+    <!--Channel 0-->
+    <Channel name="" mode="Servo" min="1984" max="9792" homemode="Goto" home="5888" speed="50" acceleration="15" neutral="6000" range="3937" />
+    <!--Channel 1-->
+    <Channel name="" mode="Servo" min="6400" max="8384" homemode="Goto" home="7600" speed="15" acceleration="3" neutral="6400" range="3937" />
+    <!--Channel 2-->
+    <Channel name="" mode="Servo" min="7488" max="8064" homemode="Off" home="7488" speed="1" acceleration="1" neutral="7488" range="635" />
+    <!--Channel 3-->
+    <Channel name="" mode="Input" min="0" max="1024" homemode="Ignore" home="0" speed="0" acceleration="0" neutral="1024" range="1905" />
+    <!--Channel 4-->
+    <Channel name="" mode="Input" min="0" max="1024" homemode="Ignore" home="0" speed="0" acceleration="0" neutral="1024" range="1905" />
+    <!--Channel 5-->
+    <Channel name="" mode="Input" min="0" max="1024" homemode="Ignore" home="0" speed="0" acceleration="0" neutral="1024" range="1905" />
+  </Channels>
+  <Sequences />
+  <Script ScriptDone="true" />
+</UscSettings>
