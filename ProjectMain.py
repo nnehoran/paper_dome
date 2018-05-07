@@ -94,7 +94,7 @@ class Tracker:
 
         # When everything done, release the capture
         self.camera.stop_capture()
-        self.controller.go_to_zero(20)
+        self.gun.go_to_zero(20)
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":

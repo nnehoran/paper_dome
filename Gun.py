@@ -39,6 +39,6 @@ class Gun:
     def stop_fire(self):
         self.trigger.set_off()
 
-    def go_to_zero():
-        self.set_target(self, 0, 0)
+    def go_to_zero(self, speed = MAX_SPEED, accel = MAX_ACCEL):
         self.stop_fire()
+        self.set_target(self, 0, 0, speed, accel)
