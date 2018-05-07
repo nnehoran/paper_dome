@@ -1,28 +1,30 @@
 import Camera
-import MotorControl
+import Gun
 import cv2
 import numpy as np
 import math
 
 class Tracker:
     """docstring for Tracker"""
-    def __init__(self, cam_id = 1, sensitivity = 10, blur_size = 11, min_object_area = 500):
-        self.controller = MotorControl.MotorControl('COM3')
+
+    BLUR_SIZE = 11
+    SENSITIVITY = 10
+    MIN_OBJECT_AREA = 500
+
+    def __init__(self, cam_id = 1):
+        self.gun = Gun.Gun()
         self.camera = Camera.Camera(_id = cam_id, crop_bounds = (200, 1080, 210, 1760), scale_to_height = 500)
         self.camera.calibrate(img_path = 'C:/Nadav/Repos/paper_dome/camera_calib/')
-        self.sensitivity = sensitivity
-        self.blur_size = blur_size
-        self.min_object_area = min_object_area
 
     def track_object(self, old_frame, new_frame):
         # Find the difference between this frame and the last
         diff = cv2.absdiff(new_frame, old_frame)
 
         # Threshold the differences
-        (_, thresh_diff) = cv2.threshold(diff, self.sensitivity, 255, cv2.THRESH_BINARY)
+        (_, thresh_diff) = cv2.threshold(diff, self.SENSITIVITY, 255, cv2.THRESH_BINARY)
 
-        thresh_diff = cv2.GaussianBlur(thresh_diff, (self.blur_size, self.blur_size), 0)
-        (_, thresh_diff) = cv2.threshold(thresh_diff, self.sensitivity, 255, cv2.THRESH_BINARY)
+        thresh_diff = cv2.GaussianBlur(thresh_diff, (self.BLUR_SIZE, self.BLUR_SIZE), 0)
+        (_, thresh_diff) = cv2.threshold(thresh_diff, self.SENSITIVITY, 255, cv2.THRESH_BINARY)
 
         # Find the largest contour
         (_, cnts, _) = cv2.findContours(thresh_diff.copy(), cv2.RETR_EXTERNAL,
@@ -58,7 +60,7 @@ class Tracker:
 
             # convert the frame to grayscale, and blur it
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            gray = cv2.GaussianBlur(gray, (self.blur_size, self.blur_size), 0)
+            gray = cv2.GaussianBlur(gray, (self.BLUR_SIZE, self.BLUR_SIZE), 0)
          
             # if the first frame is None, initialize it
             if prev_gray is None:
@@ -74,12 +76,12 @@ class Tracker:
 
                 (yaw, pitch) = self.calc_angle(x, y)
 
-                self.controller.set_yaw(yaw, speed = 20)
-                self.controller.set_pitch(pitch, speed = 15)
-                if w*h >= self.min_object_area:
-                    self.controller.set_trigger(True)
+                self.gun.set_yaw(yaw, speed = 20)
+                self.gun.set_pitch(pitch, speed = 15)
+                if w*h >= self.MIN_OBJECT_AREA:
+                    self.gun.fire()
                 else:
-                    self.controller.set_trigger(False)
+                    self.gun.stop_fire()
 
             prev_gray = gray
 

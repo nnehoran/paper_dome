@@ -7,6 +7,9 @@ class Motor:
     MAX_PULSE= 2448*4
     MAX_ANGLE_RANGE = 170
 
+    MAX_SPEED = 0
+    MAX_ACCEL = 15
+
     def __init__(self, controller, channel, min_angle = -MAX_ANGLE_RANGE/2, max_angle = MAX_ANGLE_RANGE/2, offset_angle = 0):
         self.controller = controller
         self.channel = channel
@@ -26,7 +29,7 @@ class Motor:
         pulse_range = self.MAX_PULSE - self.MIN_PULSE
         center_pulse = (self.MAX_PULSE + self.MIN_PULSE)/2
         comp_angle = angle + self.offset_angle
-        return center_pulse + pulse_range*(comp_angle)/self.MAX_ANGLE_RANGE
+        return int(center_pulse + pulse_range*(comp_angle)/self.MAX_ANGLE_RANGE)
 
     def get_position(self):
         return self.controller.getPosition(self.channel)
@@ -34,7 +37,9 @@ class Motor:
     def is_moving(self):
         return self.controller.isMoving(self.channel)
 
-    def set_target(self, angle):
+    def set_target(self, angle, speed = MAX_SPEED, accel = MAX_ACCEL):
+        self.set_speed(speed)
+        self.set_accel(accel)
         self.controller.setTarget(self.channel, self.get_pulse_width(angle))
 
     def set_speed(self, speed):
