@@ -10,14 +10,16 @@ class Motor:
     MAX_SPEED = 0
     MAX_ACCEL = 15
 
-    def __init__(self, controller, channel, min_angle = -MAX_ANGLE_RANGE/2, max_angle = MAX_ANGLE_RANGE/2, offset_angle = 0):
+    def __init__(self, controller, channel, name = 'motor', min_angle = -MAX_ANGLE_RANGE/2, max_angle = MAX_ANGLE_RANGE/2, offset_angle = 0, reversed = False):
         self.controller = controller
         self.channel = channel
         self.min_angle = min_angle
         self.max_angle = max_angle
         self.offset_angle = offset_angle
+        self.reversed = reversed
+        self.name = name
         
-        self.controller.setRange(self.channel, self.get_pulse_width(self.min_angle), self.get_pulse_width(self.max_angle))
+        # self.controller.setRange(self.channel, self.get_pulse_width(self.min_angle), self.get_pulse_width(self.max_angle))
 
     def get_min(self):
         return self.min_angle
@@ -28,8 +30,11 @@ class Motor:
     def get_pulse_width(self, angle):
         pulse_range = self.MAX_PULSE - self.MIN_PULSE
         center_pulse = (self.MAX_PULSE + self.MIN_PULSE)/2
-        comp_angle = angle + self.offset_angle
-        return int(center_pulse + pulse_range*(comp_angle)/self.MAX_ANGLE_RANGE)
+        comp_angle = -(angle + self.offset_angle)*(-1)**self.reversed
+        pulse_width = int(center_pulse + pulse_range*(comp_angle)/self.MAX_ANGLE_RANGE)
+
+        print('%s: %s' %(self.name, pulse_width//4))
+        return pulse_width
 
     def get_position(self):
         return self.controller.getPosition(self.channel)

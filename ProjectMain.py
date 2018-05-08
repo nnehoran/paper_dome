@@ -98,5 +98,5 @@ class Tracker:
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    tracker = Tracker()
+    tracker = Tracker(0)
     tracker.main()

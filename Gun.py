@@ -1,5 +1,5 @@
 import maestro
-import Motor
+from Motor import Motor
 import Trigger
 
 class Gun:
@@ -9,11 +9,14 @@ class Gun:
     PITCH_CHANNEL = 1
     TRIGGER_CHANNEL = 2
 
+    MAX_SPEED = 0
+    MAX_ACCEL = 0
+
     def __init__(self):
         self.controller = maestro.Controller('COM3')
-        self.yaw_motor = Motor.Motor(self.controller, self.YAW_CHANNEL)
-        self.pitch_motor = Motor.Motor(self.controller, self.PITCH_CHANNEL, min_angle = -20, max_angle = 25)
-        self.trigger = Trigger.Trigger(self.controller, self.TRIGGER_CHANNEL, neutral_angle = 0, travel = Motor.MAX_ANGLE_RANGE/2)
+        self.yaw_motor = Motor(self.controller, self.YAW_CHANNEL, name = 'yaw',offset_angle = 20)
+        self.pitch_motor = Motor(self.controller, self.PITCH_CHANNEL, name = 'pitch', min_angle = -20, max_angle = 25, offset_angle = 0)
+        self.trigger = Trigger.Trigger(self.controller, self.TRIGGER_CHANNEL, name = 'trigger', neutral_angle = 0, travel = Motor.MAX_ANGLE_RANGE/2, )
 
     def get_position(self):
         yaw = yaw_motor.get_position()
@@ -32,6 +35,7 @@ class Gun:
     def set_target(self, yaw, pitch, speed = MAX_SPEED, accel = MAX_ACCEL):
         self.set_yaw(yaw, speed, accel)
         self.set_pitch(pitch, speed, accel)
+        print('%s, %s' %(yaw, pitch))
 
     def fire(self):
         self.trigger.set_on()
@@ -41,4 +45,4 @@ class Gun:
 
     def go_to_zero(self, speed = MAX_SPEED, accel = MAX_ACCEL):
         self.stop_fire()
-        self.set_target(self, 0, 0, speed, accel)
+        self.set_target(0, 0, speed, accel)
