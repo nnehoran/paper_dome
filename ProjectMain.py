@@ -94,7 +94,7 @@ class Tracker:
                     self.gun.set_yaw(yaw, speed = 0, accel = 0)
                     self.gun.set_pitch(pitch, speed = 0, accel = 3)
                     (curr_yaw, curr_pitch) = self.gun.get_angles()
-                    if abs(curr_yaw - curr_pitch) <= self.AIM_THRESHOLD:
+                    if abs(curr_yaw - yaw) <= self.AIM_THRESHOLD:
                         self.gun.fire()
                     else:
                         self.gun.stop_fire()
