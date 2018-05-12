@@ -1,6 +1,6 @@
 import maestro
 from Motor import Motor
-import Trigger
+from Trigger import Trigger
 
 class Gun:
     """docstring for Gun"""
@@ -14,13 +14,13 @@ class Gun:
 
     def __init__(self):
         self.controller = maestro.Controller('COM3')
-        self.yaw_motor = Motor(self.controller, self.YAW_CHANNEL, name = 'yaw',offset_angle = 20)
-        self.pitch_motor = Motor(self.controller, self.PITCH_CHANNEL, name = 'pitch', min_angle = -20, max_angle = 25, offset_angle = 0)
-        self.trigger = Trigger.Trigger(self.controller, self.TRIGGER_CHANNEL, name = 'trigger', neutral_angle = 0, travel = Motor.MAX_ANGLE_RANGE/2, )
+        self.yaw_motor = Motor(self.controller, self.YAW_CHANNEL, name = 'yaw',offset_angle = 10)
+        self.pitch_motor = Motor(self.controller, self.PITCH_CHANNEL, name = 'pitch', max_angle = 20, offset_angle = 0)
+        self.trigger = Trigger(self.controller, self.TRIGGER_CHANNEL, name = 'trigger', neutral_pulse = 1880*4, pulse_travel = 2080*4)
 
-    def get_position(self):
-        yaw = yaw_motor.get_position()
-        pitch = yaw_motor.get_position()
+    def get_angles(self):
+        yaw = self.yaw_motor.get_angle()
+        pitch = self.yaw_motor.get_angle()
         return (yaw, pitch)
 
     def is_moving(self):

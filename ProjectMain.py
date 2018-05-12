@@ -8,8 +8,13 @@ class Tracker:
     """docstring for Tracker"""
 
     BLUR_SIZE = 11
-    SENSITIVITY = 10
+    SENSITIVITY =   10
     MIN_OBJECT_AREA = 500
+    OBJECT_DISTANCE = 2
+    CAMERA_GUN_HEIGHT_OFFSET = 0.2
+    CAMERA_GUN_DEPTH_OFFSET = -0.2
+    MAX_PITCH = 20
+    AIM_THRESHOLD = 2
 
     def __init__(self, cam_id = 1):
         self.gun = Gun.Gun()
@@ -46,6 +51,13 @@ class Tracker:
         print('yaw: %s, pitch: %s' %(str(yaw),str(pitch)))
         return (yaw, pitch)
 
+    def adjust_pitch(self, camera_pitch, camera_object_distance = OBJECT_DISTANCE):
+        camera_object_height = math.tan(camera_pitch*math.pi/180)*camera_object_distance
+        gun_object_height = camera_object_height - self.CAMERA_GUN_HEIGHT_OFFSET
+        gun_object_disance = camera_object_distance - self.CAMERA_GUN_DEPTH_OFFSET
+        gun_angle = math.tan(gun_object_height/gun_object_disance)*180/math.pi
+        return gun_angle
+
     def main(self):
         self.camera.start_capture()
 
@@ -74,14 +86,18 @@ class Tracker:
                 mid_x = x + w//2
                 mid_y = y + h//2
 
-                (yaw, pitch) = self.calc_angle(x, y)
-
-                self.gun.set_yaw(yaw, speed = 20)
-                self.gun.set_pitch(pitch, speed = 15)
                 if w*h >= self.MIN_OBJECT_AREA:
-                    self.gun.fire()
-                else:
-                    self.gun.stop_fire()
+                    (yaw, camera_pitch) = self.calc_angle(mid_x, mid_y)
+
+                    pitch = min(self.adjust_pitch(camera_pitch), self.MAX_PITCH)
+
+                    self.gun.set_yaw(yaw, speed = 0, accel = 0)
+                    self.gun.set_pitch(pitch, speed = 0, accel = 3)
+                    (curr_yaw, curr_pitch) = self.gun.get_angles()
+                    if abs(curr_yaw - curr_pitch) <= self.AIM_THRESHOLD:
+                        self.gun.fire()
+                    else:
+                        self.gun.stop_fire()
 
             prev_gray = gray
 
@@ -94,7 +110,7 @@ class Tracker:
 
         # When everything done, release the capture
         self.camera.stop_capture()
-        self.gun.go_to_zero(20)
+        self.gun.go_to_zero(speed = 10, accel = 3)
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
